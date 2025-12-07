@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import React, { useState } from 'react';
 import {
   Mail,
@@ -341,23 +340,23 @@ export default function EmailFinderChecker() {
           <section className="results-section">
             <div className="results-summary">
               <div className="summary-card">
-                <span className="summary-label">Total</span>
+                <span className="summary-label">Total: </span>
                 <span className="summary-value">{summary.total}</span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Valid</span>
+                <span className="summary-label">Valid: </span>
                 <span className="summary-value summary-value--valid">
                   {summary.valid}
                 </span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Risky</span>
+                <span className="summary-label">Risky: </span>
                 <span className="summary-value summary-value--risky">
                   {summary.risky}
                 </span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Invalid</span>
+                <span className="summary-label">Invalid: </span>
                 <span className="summary-value summary-value--invalid">
                   {summary.invalid}
                 </span>
