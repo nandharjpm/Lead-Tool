@@ -3,19 +3,23 @@
   width: 100%;
   background: #ffffff;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 90px;
 }
 
 .email-dashboard {
-  min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
   background: white;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #e5e7eb;
-  padding: 20px;
+  padding: 2px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .email-dashboard__card {
@@ -29,10 +33,34 @@
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.75);
 }
 
+/* Header Section */
+.header-section {
+  text-align: center;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.header-small-heading {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-small-subheading {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
 /* Header */
 .email-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid #1f2937;
@@ -76,16 +104,19 @@
 }
 
 .email-tab {
-  padding: 8px 16px;
-  border-radius: 999px;
+  padding: 0 16px;
+  height: 40px;
+  border-radius: 6px;
   border: 1px solid #1f2937;
   background: white;
-  color: #9ca3af;
+  color: #374151;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .email-tab--active {
@@ -141,28 +172,31 @@
 .fg input {
   border: 1px solid #334155;
   background: white;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
-  color: #f9fafb;
+  color: #1f2937;
   font-size: 14px;
-  height: 38px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 /* Finder button */
 .btn-find {
   border: none;
   background: #6366f1;
-  color: #f9fafb;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 8px;
-  padding: 0 18px;
-  height: 38px;
+  border-radius: 6px;
+  padding: 0 16px;
+  height: 40px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .btn-find:disabled {
@@ -177,40 +211,69 @@
 }
 
 /* Checker */
+.checker-inline {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
 .checker-block {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 140px;
+  max-width: 400px;
   gap: 4px;
-  margin-bottom: 10px;
 }
 
 .checker-block label {
-  font-size: 13px;
+  font-size: 12px;
+  color: #374151;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.checker-input {
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: white;
+  color: #1f2937;
+  font-size: 14px;
+  padding: 8px 12px;
+  height: 40px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .checker-block textarea {
   border-radius: 6px;
   border: 1px solid #334155;
   background: white;
-  color: #f9fafb;
+  color: #1f2937;
   font-size: 14px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 /* Buttons */
 .btn-primary {
   border: none;
   background: #6366f1;
-  color: #f9fafb;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 6px;
+  padding: 0 16px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .btn-primary:disabled {
@@ -220,15 +283,18 @@
 
 .btn-ghost {
   background: white;
-  color: #e5e7eb;
+  color: #374151;
   border: 1px solid #374151;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: 0 12px;
+  height: 40px;
+  border-radius: 6px;
+  font-size: 14px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .btn-ghost:disabled {

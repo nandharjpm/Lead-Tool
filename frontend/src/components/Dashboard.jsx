@@ -84,7 +84,7 @@ export default function EmailFinderChecker() {
   const handleCheckEmails = async () => {
     setError('');
     const emails = bulkEmails
-      .split('\n')
+      .split(/[,\n]/)
       .map((e) => e.trim())
       .filter(Boolean);
 
@@ -186,6 +186,11 @@ export default function EmailFinderChecker() {
   return (
 
     <div className="top-content"> 
+    <div className="header-section">
+          <h1 className="header-large-heading"></h1>
+          <h2 className="header-small-heading">Lead Generation Tool</h2>
+          <p className="header-small-subheading">Powerful Email Finder & Verification</p>
+      </div>
     
     <div className="email-dashboard">
       <div className="email-dashboard__card">
@@ -281,38 +286,36 @@ export default function EmailFinderChecker() {
                 )}
               </button>
             </div>
-
-            <p className="form-tip">
-              Use the main domain only, without https:// or www.
-            </p>
           </>
         ) : (
           <>
-            <div className="checker-block">
-             
-              <textarea
-                rows={6}
-                value={bulkEmails}
-                onChange={(e) => setBulkEmails(e.target.value)}
-                placeholder={`john@company.com`}
-              />
-              <p className="form-tip">We will validate all emails in bulk.</p>
-            </div>
+            <div className="checker-inline">
+              <div className="checker-block">
+                <label>Email Address</label>
+                <input
+                  type="text"
+                  value={bulkEmails}
+                  onChange={(e) => setBulkEmails(e.target.value)}
+                  placeholder="john@company.com (separate multiple emails with commas)"
+                  className="checker-input"
+                />
+              </div>
 
-            <button
-              className="btn-primary" onClick={handleCheckEmails} disabled={loading} >
-              {loading ? (
-                <>
-                  <Loader2 size={16} className="spin" />
-                  Checking…
-                </>
-              ) : (
-                <>
-                  <CheckCircle size={16} />
-                  Verify
-                </>
-              )}
-            </button>
+              <button
+                className="btn-primary" onClick={handleCheckEmails} disabled={loading} >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="spin" />
+                    Checking…
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={16} />
+                    Verify
+                  </>
+                )}
+              </button>
+            </div>
           </>
         )}
 
