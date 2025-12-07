@@ -171,7 +171,7 @@ export default function EmailFinderChecker() {
 
   return (
 
-    <div class="top-content"> 
+    <div className="top-content"> 
     
     <div className="email-dashboard">
       <div className="email-dashboard__card">
