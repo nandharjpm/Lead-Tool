@@ -98,9 +98,11 @@
 
 /* Tabs */
 .email-tabs {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   gap: 8px;
   margin: 4px 0 12px;
+  width: 100%;
 }
 
 .email-tab {
@@ -149,6 +151,7 @@
 .finder-inline {
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   gap: 10px;
   margin-bottom: 10px;
   width: 100%;
@@ -197,6 +200,8 @@
   cursor: pointer;
   white-space: nowrap;
   box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .btn-find:disabled {
@@ -214,6 +219,7 @@
 .checker-inline {
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   gap: 10px;
   margin-bottom: 10px;
   width: 100%;
@@ -222,9 +228,8 @@
 .checker-block {
   display: flex;
   flex-direction: column;
-  flex: 0 0 auto;
+  flex: 1;
   min-width: 140px;
-  max-width: 400px;
   gap: 4px;
 }
 
@@ -268,7 +273,7 @@
   border-radius: 6px;
   padding: 0 16px;
   height: 40px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;

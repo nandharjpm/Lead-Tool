@@ -296,7 +296,7 @@ export default function EmailFinderChecker() {
                   type="text"
                   value={bulkEmails}
                   onChange={(e) => setBulkEmails(e.target.value)}
-                  placeholder="john@company.com (separate multiple emails with commas)"
+                  placeholder="john@company.com"
                   className="checker-input"
                 />
               </div>
