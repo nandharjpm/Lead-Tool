@@ -2,35 +2,29 @@ import dns from "dns";
 import net from "net";
 
 // ---- Name → possible emails ----
-export function generateCandidates(fullName, domain) {
-  const raw = fullName.trim().toLowerCase().replace(/\s+/g, " ");
-  const parts = raw.split(" ");
-  const first = parts[0] || "";
-  const hasLast = parts.length > 1;
-  const last = hasLast ? parts[parts.length - 1] : "";
+export function generateCandidates(firstName, lastName, domain) {
+  const f = (firstName || "").toLowerCase().trim();
+  const l = (lastName || "").toLowerCase().trim();
+  const d = domain.toLowerCase().trim();
+  
+  if (!f || !l || !d) {
+    return [];
+  }
 
-  const firstInitial = first.charAt(0);
-  const lastInitial = last.charAt(0);
+  const fInitial = f.charAt(0);
+  const lInitial = l.charAt(0);
 
   const patterns = new Set();
 
-  if (first && hasLast) {
-    patterns.add(`${first}.${last}@${domain}`);       
-    patterns.add(`${first}${last}@${domain}`);        
-    patterns.add(`${firstInitial}${last}@${domain}`); 
-    patterns.add(`${first}${lastInitial}@${domain}`); 
-    patterns.add(`${first}@${domain}`);               
-    patterns.add(`${last}@${domain}`);                
-  } else if (first) {
-    if (first.endsWith("s") && first.length > 3) {
-      const base = first.slice(0, -1);  
-      const lastChar = "s";
-      patterns.add(`${base}.${lastChar}@${domain}`);
-      patterns.add(`${base}@${domain}`);             
-    } else {
-      patterns.add(`${first}@${domain}`);
-    }
-  }
+  // Common email patterns
+  patterns.add(`${f}.${l}@${d}`);
+  patterns.add(`${f}${l}@${d}`);
+  patterns.add(`${fInitial}${l}@${d}`);
+  patterns.add(`${f}${lInitial}@${d}`);
+  patterns.add(`${f}_${l}@${d}`);
+  patterns.add(`${f}-${l}@${d}`);
+  patterns.add(`${l}.${f}@${d}`);
+  patterns.add(`${fInitial}.${l}@${d}`);
 
   return Array.from(patterns);
 }
@@ -140,35 +134,112 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
   });
 }
 
-// ---- Main: MX + candidates + SMTP ----
-export async function verifyEmailsForPerson(fullName, domain) {
-  const mxHost = await resolveMx(domain.trim());
-  const candidates = generateCandidates(fullName, domain.trim());
+// ---- Verify a single email ----
+export async function verifySingleEmail(email) {
+  const domain = email.split("@")[1];
+  if (!domain) {
+    return { email, status: "invalid", confidence: 0, message: "Invalid email format" };
+  }
 
-  if (!candidates.length) return [];
+  try {
+    const mxHost = await resolveMx(domain);
+    const result = await smtpVerifyEmail(email, mxHost);
+    
+    if (result === true) {
+      return { email, status: "valid", confidence: 95 };
+    } else if (result === false) {
+      return { email, status: "invalid", confidence: 0 };
+    } else {
+      return { email, status: "risky", confidence: 50 };
+    }
+  } catch (err) {
+    if (err.code === "SMTP_UNAVAILABLE") {
+      throw err;
+    }
+    return { email, status: "risky", confidence: 30, message: "Could not verify" };
+  }
+}
 
-  const valid = [];
+// ---- Verify multiple emails ----
+export async function verifyMultipleEmails(emails) {
+  const results = [];
+  const domainMap = new Map(); // Cache MX lookups per domain
 
-  // Sequential check – controlled
-  for (const email of candidates) {
-    let result;
+  for (const email of emails) {
+    const domain = email.split("@")[1];
+    if (!domain) {
+      results.push({ email, status: "invalid", confidence: 0 });
+      continue;
+    }
+
     try {
-      result = await smtpVerifyEmail(email, mxHost);
+      // Get or cache MX host for this domain
+      let mxHost = domainMap.get(domain);
+      if (!mxHost) {
+        mxHost = await resolveMx(domain);
+        domainMap.set(domain, mxHost);
+      }
+
+      const result = await smtpVerifyEmail(email, mxHost);
+      
+      if (result === true) {
+        results.push({ email, status: "valid", confidence: 95 });
+      } else if (result === false) {
+        results.push({ email, status: "invalid", confidence: 0 });
+      } else {
+        results.push({ email, status: "risky", confidence: 50 });
+      }
     } catch (err) {
       if (err.code === "SMTP_UNAVAILABLE") {
-        // bubble up – caller (server.js) will handle
         throw err;
+      }
+      results.push({ email, status: "risky", confidence: 30 });
+    }
+  }
+
+  return results;
+}
+
+// ---- Main: MX + candidates + SMTP ----
+export async function verifyEmailsForPerson(firstName, lastName, domain) {
+  const candidates = generateCandidates(firstName, lastName, domain.trim());
+
+  if (!candidates.length) {
+    return candidates.map(email => ({ email, status: "invalid", confidence: 0 }));
+  }
+
+  try {
+    const mxHost = await resolveMx(domain.trim());
+    const results = [];
+
+    // Check all candidates and return all results (not just valid ones)
+    for (const email of candidates) {
+      let result;
+      try {
+        result = await smtpVerifyEmail(email, mxHost);
+      } catch (err) {
+        if (err.code === "SMTP_UNAVAILABLE") {
+          throw err;
+        } else {
+          result = null;
+        }
+      }
+
+      if (result === true) {
+        results.push({ email, status: "valid", confidence: 95 });
+      } else if (result === false) {
+        results.push({ email, status: "invalid", confidence: 0 });
       } else {
-        result = null;
+        results.push({ email, status: "risky", confidence: 50 });
       }
     }
 
-    if (result === true) {
-      valid.push({ email, score: 0.95 }); // SMTP confirmed
-      // Option: break; // if you want only first valid; or keep all.
+    return results;
+  } catch (err) {
+    if (err.code === "SMTP_UNAVAILABLE") {
+      throw err;
     }
-    // false & null → we simply don't store
+    // If MX lookup fails, return all as risky
+    return candidates.map(email => ({ email, status: "risky", confidence: 30 }));
   }
-
-  return valid; // only SMTP-confirmed emails
 }
