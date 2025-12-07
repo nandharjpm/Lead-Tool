@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import React, { useState } from 'react';
 import {
   Mail,
@@ -199,7 +198,6 @@ export default function EmailFinderChecker() {
           </div>
         </header>
 
-        <p className="email-demo-note">Real-time email verification using MX records and SMTP protocol</p>
 
         <div className="email-tabs">
           <button
@@ -227,12 +225,6 @@ export default function EmailFinderChecker() {
             Checker
           </button>
         </div>
-
-        <p className="email-helper">
-          {activeTab === 'finder'
-            ? 'Generate likely email patterns from a name and company domain.'
-            : 'Paste emails (one per line) to verify multiple addresses at once.'}
-        </p>
 
         {error && (
           <div className="email-error">
@@ -337,23 +329,23 @@ export default function EmailFinderChecker() {
           <section className="results-section">
             <div className="results-summary">
               <div className="summary-card">
-                <span className="summary-label">Total</span>
+                <span className="summary-label">Total: </span>
                 <span className="summary-value">{summary.total}</span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Valid</span>
+                <span className="summary-label">Valid: </span>
                 <span className="summary-value summary-value--valid">
                   {summary.valid}
                 </span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Risky</span>
+                <span className="summary-label">Risky: </span>
                 <span className="summary-value summary-value--risky">
                   {summary.risky}
                 </span>
               </div>
               <div className="summary-card">
-                <span className="summary-label">Invalid</span>
+                <span className="summary-label">Invalid: </span>
                 <span className="summary-value summary-value--invalid">
                   {summary.invalid}
                 </span>
