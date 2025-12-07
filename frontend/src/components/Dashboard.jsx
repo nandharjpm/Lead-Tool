@@ -184,6 +184,9 @@ export default function EmailFinderChecker() {
   );
 
   return (
+
+    <div class="top-content"> 
+    
     <div className="email-dashboard">
       <div className="email-dashboard__card">
         <header className="email-header">
@@ -201,26 +204,14 @@ export default function EmailFinderChecker() {
 
         <div className="email-tabs">
           <button
-            className={
-              'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '')
-            }
-            onClick={() => {
-              setActiveTab('finder');
-              setError('');
-            }}
-          >
+            className={ 'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '') } 
+              onClick={() => { setActiveTab('finder'); setError('')}} >
             <Search size={16} />
             Finder
           </button>
           <button
-            className={
-              'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')
-            }
-            onClick={() => {
-              setActiveTab('checker');
-              setError('');
-            }}
-          >
+            className={'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')}
+            onClick={() => { setActiveTab('checker'); setError('') }}>
             <CheckCircle size={16} />
             Checker
           </button>
@@ -298,7 +289,7 @@ export default function EmailFinderChecker() {
         ) : (
           <>
             <div className="checker-block">
-              <label>Email Addresses (one per line)</label>
+             
               <textarea
                 rows={6}
                 value={bulkEmails}
@@ -309,10 +300,7 @@ export default function EmailFinderChecker() {
             </div>
 
             <button
-              className="btn-primary"
-              onClick={handleCheckEmails}
-              disabled={loading}
-            >
+              className="btn-primary" onClick={handleCheckEmails} disabled={loading} >
               {loading ? (
                 <>
                   <Loader2 size={16} className="spin" />
@@ -415,6 +403,7 @@ export default function EmailFinderChecker() {
           </section>
         )}
       </div>
+    </div>
     </div>
   );
 }
