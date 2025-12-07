@@ -1,0 +1,61 @@
+/* Navbar container */
+.navbar {
+  width: 100%;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: sans-serif;
+  background: #fff;
+}
+
+/* Left links */
+.nav-left {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-item {
+  color: #0a1a3b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  opacity: 0.7;
+}
+
+/* Buttons */
+.btn-outline {
+  padding: 10px 24px;
+  border: 2px solid #ff4f79;
+  border-radius: 8px;
+  background: transparent;
+  color: #ff4f79;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.btn-outline:hover {
+  background: #ffe6ee;
+}
+
+.btn-solid {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #ff4f79;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-solid:hover {
+  opacity: 0.9;
+}
+
+/* Dropdown text style (simple arrow only) */
+.dropdown::after {
+  margin-left: 4px;
+}
