@@ -198,7 +198,6 @@ export default function EmailFinderChecker() {
           </div>
         </header>
 
-        <p className="email-demo-note">Real-time email verification using MX records and SMTP protocol</p>
 
         <div className="email-tabs">
           <button
@@ -226,12 +225,6 @@ export default function EmailFinderChecker() {
             Checker
           </button>
         </div>
-
-        <p className="email-helper">
-          {activeTab === 'finder'
-            ? 'Generate likely email patterns from a name and company domain.'
-            : 'Paste emails (one per line) to verify multiple addresses at once.'}
-        </p>
 
         {error && (
           <div className="email-error">
