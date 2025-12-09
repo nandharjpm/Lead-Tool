@@ -10,7 +10,7 @@ import {
   Download,
 } from 'lucide-react';
 import './Dashboard.css';
-4
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function EmailFinderChecker() {
@@ -185,228 +185,222 @@ export default function EmailFinderChecker() {
 
   return (
 
-    <div className="top-content"> 
-    <div className="header-section">
-          <h1 className="header-large-heading"></h1>
-          <h2 className="header-small-heading">Lead Generation Tool</h2>
-          <p className="header-small-subheading">Powerful Email Finder & Verification</p>
+    <div className="top-content">
+      <div className="header-section">
+        {/* <h2 className="header-top-label">EMAIL FINDER</h2> */}
+
+        <h1 className="header-large-heading">
+         Accurate email discovery for your outreach,
+         <span className='span-color'> simplified</span>
+        </h1>
       </div>
-    
-    <div className="email-dashboard">
-      <div className="email-dashboard__card">
-        <header className="email-header">
-          <div className="email-header__icon">
-            <Mail size={18} />
-          </div>
-          <div>
-            <h1 className="email-header__title">Email Finder &amp; Checker</h1>
-            <p className="email-header__subtitle">
-              Find patterns &amp; validate email addresses in seconds.
-            </p>
-          </div>
-        </header>
 
 
-        <div className="email-tabs">
-          <button
-            className={ 'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '') } 
-              onClick={() => { setActiveTab('finder'); setError('')}} >
-            <Search size={16} />
-            Finder
-          </button>
-          <button
-            className={'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')}
-            onClick={() => { setActiveTab('checker'); setError('') }}>
-            <CheckCircle size={16} />
-            Checker
-          </button>
-        </div>
-
-        {error && (
-          <div className="email-error">
-            <AlertCircle size={14} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {activeTab === 'finder' ? (
-          <>
-            <div className="finder-inline">
-              <div className="fg">
-                <label>First Name</label>
-                <input
-                  type="text"
-                  value={finderInput.firstName}
-                  onChange={(e) =>
-                    setFinderInput({ ...finderInput, firstName: e.target.value })
-                  }
-                  placeholder="John"
-                />
-              </div>
-
-              <div className="fg">
-                <label>Last Name</label>
-                <input
-                  type="text"
-                  value={finderInput.lastName}
-                  onChange={(e) =>
-                    setFinderInput({ ...finderInput, lastName: e.target.value })
-                  }
-                  placeholder="Doe"
-                />
-              </div>
-
-              <div className="fg">
-                <label>Company Domain</label>
-                <input
-                  type="text"
-                  value={finderInput.domain}
-                  onChange={(e) =>
-                    setFinderInput({ ...finderInput, domain: e.target.value })
-                  }
-                  placeholder="company.com"
-                />
-              </div>
-
-              <button
-                className="btn-find"
-                onClick={handleFindEmails}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 size={16} className="spin" />
-                    Finding…
-                  </>
-                ) : (
-                  <>
-                    <Search size={16} />
-                    Find
-                  </>
-                )}
-              </button>
+      <div className="email-dashboard">
+        <div className="email-dashboard__card">
+          <header className="email-header">
+            <div className="email-header__icon">
+              <Mail size={18} />
             </div>
-          </>
-        ) : (
-          <>
-            <div className="checker-inline">
-              <div className="checker-block">
-                <label>Email Address</label>
-                <input
-                  type="text"
-                  value={bulkEmails}
-                  onChange={(e) => setBulkEmails(e.target.value)}
-                  placeholder="john@company.com"
-                  className="checker-input"
-                />
-              </div>
-
-              <button
-                className="btn-primary" onClick={handleCheckEmails} disabled={loading} >
-                {loading ? (
-                  <>
-                    <Loader2 size={16} className="spin" />
-                    Checking…
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle size={16} />
-                    Verify
-                  </>
-                )}
-              </button>
+            <div>
+              <h1 className="email-header__title">Email Finder &amp; Checker</h1>
+              <p className="email-header__subtitle">
+                Find patterns &amp; validate email addresses in seconds.
+              </p>
             </div>
-          </>
-        )}
+          </header>
 
-        {/* results */}
-        {(finderResults.length > 0 || checkerResults.length > 0) && (
-          <section className="results-section">
-            <div className="results-summary">
-              <div className="summary-card">
-                <span className="summary-label">Total: </span>
-                <span className="summary-value">{summary.total}</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-label">Valid: </span>
-                <span className="summary-value summary-value--valid">
-                  {summary.valid}
-                </span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-label">Risky: </span>
-                <span className="summary-value summary-value--risky">
-                  {summary.risky}
-                </span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-label">Invalid: </span>
-                <span className="summary-value summary-value--invalid">
-                  {summary.invalid}
-                </span>
-              </div>
+
+          <div className="email-tabs">
+            <button
+              className={'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '')}
+              onClick={() => { setActiveTab('finder'); setError('') }} >
+              <Search size={16} />
+              Finder
+            </button>
+            <button
+              className={'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')}
+              onClick={() => { setActiveTab('checker'); setError('') }}>
+              <CheckCircle size={16} />
+              Checker
+            </button>
+          </div>
+
+          {error && (
+            <div className="email-error">
+              <AlertCircle size={14} />
+              <span>{error}</span>
             </div>
+          )}
 
-            <div className="results-card">
-              <div className="results-header">
-                <div>
-                  <div className="results-title">Results</div>
-                  <div className="results-subtitle">
-                    {activeTab === 'finder' ? 'Finder' : 'Checker'} ·{' '}
-                    {activeResults.length} rows
-                  </div>
+          {activeTab === 'finder' ? (
+            <>
+              <div className="finder-inline">
+                <div className="fg">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    value={`${finderInput.firstName} ${finderInput.lastName}`.trim()}
+                    onChange={(e) => {
+                      const [firstName, ...rest] = e.target.value.split(" ");
+                      const lastName = rest.join(" ");
+                      setFinderInput({ ...finderInput, firstName, lastName });
+                    }}
+                    placeholder="John Doe"
+                  />
                 </div>
+
+                <div className="fg">
+                  <label>Company Domain</label>
+                  <input
+                    type="text"
+                    value={finderInput.domain}
+                    onChange={(e) =>
+                      setFinderInput({ ...finderInput, domain: e.target.value })
+                    }
+                    placeholder="company.com"
+                  />
+                </div>
+
                 <button
-                  className="btn-ghost"
-                  onClick={() => downloadResults(activeResults)}
-                  disabled={!activeResults.length}
+                  className="btn-find"
+                  onClick={handleFindEmails}
+                  disabled={loading}
                 >
-                  <Download size={14} />
-                  Export CSV
+                  {loading ? (
+                    <>
+                      <Loader2 size={16} className="spin" />
+                      Finding…
+                    </>
+                  ) : (
+                    <>
+                      <Search size={16} />
+                      Find
+                    </>
+                  )}
                 </button>
               </div>
+            </>
+          ) : (
+            <>
+              <div className="checker-inline">
+                <div className="checker-block">
+                  <label>Email Address</label>
+                  <input
+                    type="text"
+                    value={bulkEmails}
+                    onChange={(e) => setBulkEmails(e.target.value)}
+                    placeholder="john@company.com"
+                    className="checker-input"
+                  />
+                </div>
 
-              <div className="results-list">
-                {activeResults.map((result, idx) => (
-                  <div className="result-row" key={idx}>
-                    <div className="result-main">
-                      <div className="result-email" title={result.email}>
-                        {result.email}
-                      </div>
-                      <div className="result-meta">
-                        Confidence:{' '}
-                        <span className="result-meta-strong">
-                          {result.confidence}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="result-actions">
-                      <span className={getStatusClass(result.status)}>
-                        {getStatusIcon(result.status)}
-                        <span>{result.status}</span>
-                      </span>
-                      <button
-                        className="icon-btn"
-                        onClick={() => copyToClipboard(result.email)}
-                        title="Copy email"
-                      >
-                        <Copy size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {!activeResults.length && (
-                  <div className="results-empty">
-                    No results yet. Run a search to see suggestions.
-                  </div>
-                )}
+                <button
+                  className="btn-primary" onClick={handleCheckEmails} disabled={loading} >
+                  {loading ? (
+                    <>
+                      <Loader2 size={16} className="spin" />
+                      Checking…
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={16} />
+                      Verify
+                    </>
+                  )}
+                </button>
               </div>
-            </div>
-          </section>
-        )}
+            </>
+          )}
+
+          {/* results */}
+          {(finderResults.length > 0 || checkerResults.length > 0) && (
+            <section className="results-section">
+              <div className="results-summary">
+                <div className="summary-card">
+                  <span className="summary-label">Total: </span>
+                  <span className="summary-value">{summary.total}</span>
+                </div>
+                <div className="summary-card">
+                  <span className="summary-label">Valid: </span>
+                  <span className="summary-value summary-value--valid">
+                    {summary.valid}
+                  </span>
+                </div>
+                <div className="summary-card">
+                  <span className="summary-label">Risky: </span>
+                  <span className="summary-value summary-value--risky">
+                    {summary.risky}
+                  </span>
+                </div>
+                <div className="summary-card">
+                  <span className="summary-label">Invalid: </span>
+                  <span className="summary-value summary-value--invalid">
+                    {summary.invalid}
+                  </span>
+                </div>
+              </div>
+
+              <div className="results-card">
+                <div className="results-header">
+                  <div>
+                    <div className="results-title">Results</div>
+                    <div className="results-subtitle">
+                      {activeTab === 'finder' ? 'Finder' : 'Checker'} ·{' '}
+                      {activeResults.length} rows
+                    </div>
+                  </div>
+                  <button
+                    className="btn-ghost"
+                    onClick={() => downloadResults(activeResults)}
+                    disabled={!activeResults.length}
+                  >
+                    <Download size={14} />
+                    Export CSV
+                  </button>
+                </div>
+
+                <div className="results-list">
+                  {activeResults.map((result, idx) => (
+                    <div className="result-row" key={idx}>
+                      <div className="result-main">
+                        <div className="result-email" title={result.email}>
+                          {result.email}
+                        </div>
+                        <div className="result-meta">
+                          Confidence:{' '}
+                          <span className="result-meta-strong">
+                            {result.confidence}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="result-actions">
+                        <span className={getStatusClass(result.status)}>
+                          {getStatusIcon(result.status)}
+                          <span>{result.status}</span>
+                        </span>
+                        <button
+                          className="icon-btn"
+                          onClick={() => copyToClipboard(result.email)}
+                          title="Copy email"
+                        >
+                          <Copy size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {!activeResults.length && (
+                    <div className="results-empty">
+                      No results yet. Run a search to see suggestions.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -1,26 +1,32 @@
-/* Navbar container */
+/* ========================= */
+/* BASE NAVBAR DESKTOP STYLE */
+/* ========================= */
 .navbar {
   width: 100%;
-  padding: 16px 40px;
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: sans-serif;
   background: #fff;
-  box-sizing: border-box; /* Prevent overflow */
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 /* Left links */
 .nav-left {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap; /* IMPORTANT: prevents overflow */
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .nav-item {
   color: #0a1a3b;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap; /* prevents breaking words */
 }
 
 .nav-item:hover {
@@ -31,47 +37,67 @@
 .nav-right {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap; /* prevent right-side overflow */
+  flex-wrap: wrap;
 }
 
-/* Buttons */
-.btn-outline {
-  padding: 10px 24px;
-  border: 2px solid #560591;
-  border-radius: 8px;
-  background: transparent;
-  color: #560591;
-  cursor: pointer;
+.btn-outline,
+.btn-solid {
+  padding: 12px 24px;
+  border-radius: 12px;
   font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.25s ease;
+  font-size: 15px;
+}
+
+/* Outline */
+.btn-outline {
+  border: 2px solid #560591;
+  background: #ffffff;
+  color: #560591;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
 }
 
 .btn-outline:hover {
-  background: #ffe6ee;
+  background: #f6ecff;
+  box-shadow: 0 4px 12px rgba(86, 5, 145, 0.15);
 }
 
+/* Solid */
 .btn-solid {
-  padding: 10px 24px;
-  border: none;
-  border-radius: 8px;
   background: #560591;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
+  border: none;
+  color: white;
+  box-shadow: 0 4px 12px rgba(86, 5, 145, 0.3);
 }
 
 .btn-solid:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(86, 5, 145, 0.4);
 }
 
-/* -------------- */
-/* Mobile screens */
-/* -------------- */
+/* ========================= */
+/* RESPONSIVE BEHAVIOR       */
+/* ========================= */
+@media (max-width: 850px) {
+  .navbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nav-left {
+    flex: 1;
+  }
+}
+
+/* MOBILE PHONES */
 @media (max-width: 600px) {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
     padding: 16px 20px;
+    gap: 16px;
   }
 
   .nav-left,
@@ -79,7 +105,7 @@
     width: 100%;
     display: flex;
     justify-content: flex-start;
-    flex-wrap: wrap;  /* prevents overflow */
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 }
