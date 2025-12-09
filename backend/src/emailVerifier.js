@@ -1,30 +1,30 @@
 import dns from "dns";
 import net from "net";
 
-// ---- Name → possible emails ----
-export function generateCandidates(firstName, lastName, domain) {
+export function generateCandidates(firstName, domain) {
   const f = (firstName || "").toLowerCase().trim();
-  const l = (lastName || "").toLowerCase().trim();
-  const d = domain.toLowerCase().trim();
-  
-  if (!f || !l || !d) {
+  const d = (domain || "").toLowerCase().trim();
+
+  if (!f || !d) {
     return [];
   }
 
-  const fInitial = f.charAt(0);
-  const lInitial = l.charAt(0);
+  const firshtChar = f.charAt(0);
+  const lastChar = f.charAt(f.length - 1);
+
 
   const patterns = new Set();
-
-  // Common email patterns
-  patterns.add(`${f}.${l}@${d}`);
-  patterns.add(`${f}${l}@${d}`);
-  patterns.add(`${fInitial}${l}@${d}`);
-  patterns.add(`${f}${lInitial}@${d}`);
-  patterns.add(`${f}_${l}@${d}`);
-  patterns.add(`${f}-${l}@${d}`);
-  patterns.add(`${l}.${f}@${d}`);
-  patterns.add(`${fInitial}.${l}@${d}`);
+  patterns.add(`${f}@${d}`);           
+  patterns.add(`${firshtChar}@${d}`);    
+  patterns.add(`${firshtChar}.${f}@${d}`);
+  patterns.add(`${f}.${firshtChar}@${d}`);
+  patterns.add(`${firshtChar}-${f}@${d}`);
+  patterns.add(`${firshtChar}${f}@${d}`);
+  patterns.add(`${lastChar}@${d}`);    
+  patterns.add(`${lastChar}.${f}@${d}`);
+  patterns.add(`${lastChar}-${f}@${d}`);
+  patterns.add(`${f}.${lastChar}@${d}`);
+  patterns.add(`${lastChar}${f}@${d}`);
 
   return Array.from(patterns);
 }
@@ -88,10 +88,8 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
         err.code === "EHOSTUNREACH" ||
         err.code === "ETIMEDOUT"
       ) {
-        // Environment la port 25 use panna mudiyadhu
         failUnavailable(err.message);
       } else {
-        // Some other error; treat as unknown result
         finish(null);
       }
     });
@@ -107,7 +105,6 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
       buffer = "";
 
       if (step === 0) {
-        // Greeting
         socket.write(`HELO example.com\r\n`);
         step = 1;
       } else if (step === 1) {
@@ -134,7 +131,6 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
   });
 }
 
-// ---- Verify a single email ----
 export async function verifySingleEmail(email) {
   const domain = email.split("@")[1];
   if (!domain) {
@@ -198,8 +194,8 @@ export async function verifyMultipleEmails(emails) {
   return results;
 }
 
-export async function verifyEmailsForPerson(firstName, lastName, domain) {
-  const candidates = generateCandidates(firstName, lastName, domain.trim());
+export async function verifyEmailsForPerson(firstName, domain) {
+  const candidates = generateCandidates(firstName, domain.trim());
 
   if (!candidates.length) {
     return candidates.map(email => ({ email, status: "invalid", confidence: 0 }));

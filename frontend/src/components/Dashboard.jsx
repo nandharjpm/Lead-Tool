@@ -17,7 +17,6 @@ export default function EmailFinderChecker() {
   const [activeTab, setActiveTab] = useState('finder');
   const [finderInput, setFinderInput] = useState({
     firstName: '',
-    lastName: '',
     domain: '',
   });
   const [finderResults, setFinderResults] = useState([]);
@@ -32,10 +31,10 @@ export default function EmailFinderChecker() {
   };
 
   const handleFindEmails = async () => {
-    const { firstName, lastName, domain } = finderInput;
+    const { firstName, domain } = finderInput;
     setError('');
 
-    if (!firstName || !lastName || !domain) {
+    if (!firstName || !domain) {
       setError('Please fill in all fields before searching.');
       return;
     }
@@ -51,7 +50,6 @@ export default function EmailFinderChecker() {
         },
         body: JSON.stringify({
           firstName: firstName.trim(),
-          lastName: lastName.trim(),
           domain: domain.trim(),
         }),
       });
@@ -187,7 +185,6 @@ export default function EmailFinderChecker() {
 
     <div className="top-content">
       <div className="header-section">
-        {/* <h2 className="header-top-label">EMAIL FINDER</h2> */}
 
         <h1 className="header-large-heading">
          Accurate email discovery for your outreach,
@@ -240,11 +237,10 @@ export default function EmailFinderChecker() {
                   <label>Full Name</label>
                   <input
                     type="text"
-                    value={`${finderInput.firstName} ${finderInput.lastName}`.trim()}
+                    value={`${finderInput.firstName}`.trim()}
                     onChange={(e) => {
                       const [firstName, ...rest] = e.target.value.split(" ");
-                      const lastName = rest.join(" ");
-                      setFinderInput({ ...finderInput, firstName, lastName });
+                      setFinderInput({ ...finderInput, firstName});
                     }}
                     placeholder="John Doe"
                   />
