@@ -1,0 +1,35 @@
+Check if fingerprint already exists
+IF fingerprint exists:
+    - Update lastSeen = now
+    - Increase hits counter by 1
+    - Update IP and user-agent if you want
+ELSE:
+    - Create new entry in DB with:
+         fingerprint
+         ip
+         userAgent
+         firstSeen = now
+         lastSeen = now
+         hits = 1
+
+Use logic for your credit system
+IF record.hits > allowedLimit:
+    deny free access
+ELSE:
+    allow access
+
+
+User visits site
+     |
+Generate fingerprint in browser
+     |
+Send fingerprint -> backend
+     |
+Backend checks database
+     |
+IF fingerprint exists:
+       update lastSeen and hits
+       return "existing"
+ELSE:
+       create record
+       return "new"

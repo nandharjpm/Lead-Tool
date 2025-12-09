@@ -190,8 +190,9 @@ export default function EmailFinderChecker() {
         {/* <h2 className="header-top-label">EMAIL FINDER</h2> */}
 
         <h1 className="header-large-heading">
-         Accurate email discovery for your outreach,
-         <span className='span-color'> simplified</span>
+         Accurate email discovery for your 
+         <span className='span-color'> Healthcare </span>
+         outreach.
         </h1>
       </div>
 
