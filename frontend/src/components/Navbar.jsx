@@ -1,5 +1,5 @@
 import "../components/Navbar.css";
-import { signInWithGoogle } from "../firebase/firebase";
+// import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {

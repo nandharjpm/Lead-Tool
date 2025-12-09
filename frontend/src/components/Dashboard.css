@@ -444,6 +444,7 @@
   border-radius: 12px;
   border: 1px solid #560591;
   background: white;
+  color: #000;
   overflow: hidden;
 }
 
@@ -493,11 +494,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #000;
 }
 
 .result-meta {
   font-size: 11px;
-  color: #9ca3af;
+  color: #111;
   margin-top: 2px;
 }
 

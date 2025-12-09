@@ -10,18 +10,18 @@ app.use(express.json());
 
 // Finder endpoint: Generate email patterns and verify them
 app.post("/api/find-emails", async (req, res) => {
-  const { firstName, lastName, domain } = req.body;
+  const { firstName, domain } = req.body;
   console.log("Hit /api/find-emails with body:", req.body);
 
-  if (!firstName || !lastName || !domain) {
+  if (!firstName || !domain) {
     return res.status(400).json({
       success: false,
-      message: "firstName, lastName, and domain are required",
+      message: "Name and domain are required",
     });
   }
 
   try {
-    const results = await verifyEmailsForPerson(firstName, lastName, domain);
+    const results = await verifyEmailsForPerson(firstName, domain);
 
     return res.json({
       success: true,
@@ -46,7 +46,6 @@ app.post("/api/find-emails", async (req, res) => {
   }
 });
 
-// Checker endpoint: Verify individual or multiple emails
 app.post("/api/check-emails", async (req, res) => {
   const { emails } = req.body;
 
@@ -57,7 +56,6 @@ app.post("/api/check-emails", async (req, res) => {
     });
   }
 
-  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validEmails = emails.filter(email => emailRegex.test(email.trim()));
   
