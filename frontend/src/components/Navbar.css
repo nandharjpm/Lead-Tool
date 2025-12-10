@@ -1,6 +1,21 @@
 /* ========================= */
 /* BASE NAVBAR DESKTOP STYLE */
 /* ========================= */
+
+.popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4caf50;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  animation: fadeInOut 2s ease forwards;
+  z-index: 9999;
+}
+
+
 .navbar {
   width: 100%;
   padding: 16px 32px;

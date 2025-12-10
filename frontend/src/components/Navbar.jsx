@@ -1,17 +1,22 @@
 import "../components/Navbar.css";
-// import { signInWithGoogle } from "../firebase/firebase";
+import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleGoogleSignup = async () => {
     try {
       const result = await signInWithGoogle();
       console.log("User:", result.user);
 
-      // Go to dashboard
-      navigate("/");
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        navigate("/");
+      }, 2000);
     } catch (err) {
       console.error(err);
       alert("Google sign-in failed");
@@ -19,6 +24,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <nav className="navbar">
       <div className="nav-left">
         <div className="nav-item dropdown">Features ▾</div>
@@ -33,5 +39,14 @@ export default function Navbar() {
         </button>
       </div>
     </nav>
+
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            🎉 Sign up successful!
+          </div>
+        </div>
+      )}
+      </>
   );
 }
