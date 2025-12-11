@@ -23,6 +23,24 @@ export default function Navbar() {
     }
   };
 
+    const handleEmailLogin = async () => {
+    try {
+      const result = await loginWithEmail("test@example.com", "password123");  
+      console.log("Logged In:", result.user);
+
+      showSuccess("Login successful!");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert("Login failed");
+    }
+  };
+
+  const showSuccess = (msg) => {
+    setShowPopup(msg);
+    setTimeout(() => setShowPopup(null), 2000);
+  };
+
   return (
     <>
     <nav className="navbar">
@@ -33,7 +51,7 @@ export default function Navbar() {
       </div>
 
       <div className="nav-right">
-        <button className="btn-outline">SIGN IN</button>
+        <button className="btn-outline" onClick={handleEmailLogin}> SIGN IN </button>
         <button className="btn-solid" onClick={handleGoogleSignup}>
           SIGN UP
         </button>
@@ -43,7 +61,7 @@ export default function Navbar() {
       {showPopup && (
         <div className="popup">
           <div className="popup-content">
-            🎉 Sign up successful!
+            🎉 {showPopup}
           </div>
         </div>
       )}
