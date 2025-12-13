@@ -7,7 +7,6 @@ function App() {
   return (
     <BrowserRouter>
     <Navbar />
-    
       <Routes>
         {/* Main route -> Dashboard */}
         <Route path="/" element={<Dashboard />} />
