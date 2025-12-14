@@ -8,7 +8,6 @@ export default function EmailFinderChecker() {
   const [activeTab, setActiveTab] = useState('finder');
   const [finderInput, setFinderInput] = useState({
     firstName: '',
-    lastName: '',
     domain: '',
   });
   const [finderResults, setFinderResults] = useState([]);
@@ -227,22 +226,14 @@ export default function EmailFinderChecker() {
             <>
               <div className="finder-inline">
                 <div className="fg">
-                      <label>Full Name</label>
+                      <label>First Name</label>
                       <input
                         type="text"
-                        value={finderInput.fullName}
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          const [firstName, ...lastNameParts] = value.trim().split(/\s+/);
-
-                          setFinderInput({
-                            fullName: value,
-                            firstName: firstName || '',
-                            lastName: lastNameParts.join(' ') || '',
-                          });
-                        }}
-                        placeholder="John Doe"
+                        value={finderInput.firstName}
+                        onChange={(e) =>
+                          setFinderInput({ ...finderInput, firstName: e.target.value })
+                        }
+                        placeholder="John"
                       />
                     </div>
                     

@@ -1,6 +1,15 @@
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// Load environment variables from .env file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, "../.env") });
+
 import express from "express";
 import cors from "cors";
-import { verifyEmailsForPerson, verifyMultipleEmails, verifySingleEmail } from "./emailVerifier.js";
+import { verifyEmailsForPerson, verifyMultipleEmails } from "./emailVerifier.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,8 +29,13 @@ app.post("/api/find-emails", async (req, res) => {
     });
   }
 
+  // Parse full name: split "nandhakumar s" into firstName="nandhakumar" and lastName="s"
+  const nameParts = firstName.trim().split(/\s+/);
+  const parsedFirstName = nameParts[0] || "";
+  const parsedLastName = nameParts.slice(1).join(" ") || "";
+
   try {
-    const results = await verifyEmailsForPerson(firstName, domain);
+    const results = await verifyEmailsForPerson(parsedFirstName, parsedLastName, domain);
 
     return res.json({
       success: true,
