@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download} from 'lucide-react';
 import './Dashboard.css';
 
@@ -17,6 +17,46 @@ export default function EmailFinderChecker() {
   const [bulkEmails, setBulkEmails] = useState('');
   const [error, setError] = useState('');
 
+  const [sessionId, setSessionId] = useState(
+  () => localStorage.getItem('sessionId') || null
+  );
+
+  const startSession = async () => {
+  const res = await fetch('/api/session/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      offset: new Date().getTimezoneOffset(),
+      userAgent: navigator.userAgent,
+      screenResolution: `${window.screen.width}x${window.screen.height}`,
+    }),
+  });
+
+  const data = await res.json();
+  localStorage.setItem('sessionId', data.sessionId);
+  setSessionId(data.sessionId);
+
+  return data.sessionId;
+};
+
+useEffect(() => {
+  const endSession = () => {
+    const sid = localStorage.getItem('sessionId');
+    if (!sid) return;
+
+    navigator.sendBeacon(
+      `${API_BASE_URL}/api/session/end`,
+      JSON.stringify({ sessionId: sid })
+    );
+  };
+
+  window.addEventListener('beforeunload', endSession);
+  return () => window.removeEventListener('beforeunload', endSession);
+}, []);
+
+
+
   const validateEmailFormat = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -33,6 +73,12 @@ export default function EmailFinderChecker() {
 
     setLoading(true);
     setFinderResults([]);
+    
+     // 🔥 ADD THIS BLOCK
+    let activeSessionId = sessionId;
+    if (!activeSessionId) {
+    activeSessionId = await startSession();
+  }
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/find-emails`, {
@@ -43,6 +89,7 @@ export default function EmailFinderChecker() {
         body: JSON.stringify({
           firstName: firstName.trim(),
           domain: domain.trim(),
+          sessionId: activeSessionId,
         }),
       });
 

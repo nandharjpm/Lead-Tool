@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { verifyEmailsForPerson, verifyMultipleEmails, verifySingleEmail } from "./emailVerifier.js";
+import Session from "./fingerprint/visitor.model.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,7 +11,8 @@ app.use(express.json());
 
 // Finder endpoint: Generate email patterns and verify them
 app.post("/api/find-emails", async (req, res) => {
-  const { firstName, domain } = req.body;
+  const { firstName, domain, sessionId } = req.body;
+
   console.log("Hit /api/find-emails with body:", req.body);
 
   if (!firstName || !domain) {
@@ -21,6 +23,11 @@ app.post("/api/find-emails", async (req, res) => {
   }
 
   try {
+    // 🔑 Update session activity
+    if (sessionId) {
+      await updateSessionActivity(sessionId);
+    }
+
     const results = await verifyEmailsForPerson(firstName, domain);
 
     return res.json({
@@ -35,7 +42,8 @@ app.post("/api/find-emails", async (req, res) => {
       return res.status(503).json({
         success: false,
         reason: "smtp_unavailable",
-        message: "SMTP server unavailable (port 25 blocked or unreachable). Cannot verify emails.",
+        message:
+          "SMTP server unavailable (port 25 blocked or unreachable). Cannot verify emails.",
       });
     }
 
@@ -89,6 +97,45 @@ app.post("/api/check-emails", async (req, res) => {
       success: false,
       message: "Failed to check emails (MX/SMTP error)",
     });
+  }
+});
+
+app.post('/api/session/start', (req, res) => {
+  try {
+    const { timezone, offset, userAgent, screenResolution } = req.body;
+    
+    if (!timezone) {
+      return res.status(400).json({ error: 'Timezone is required' });
+    }
+
+    const sessionId = uuidv4();
+    const sessionData = {
+      sessionId,
+      timezone,
+      offset,
+      userAgent: userAgent || req.headers['user-agent'],
+      screenResolution,
+      ip: req.ip || req.connection.remoteAddress,
+      startTime: new Date(),
+      totalTimeSpent: 0,
+      pageVisits: 1,
+      isActive: true,
+      events: []
+    };
+
+    saveSession(sessionId, sessionData);
+
+    console.log(`New session started: ${sessionId}`);
+
+    res.json({
+      success: true,
+      sessionId,
+      message: 'Session started successfully'
+    });
+
+  } catch (error) {
+    console.error('Error starting session:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
