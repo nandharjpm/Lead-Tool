@@ -1,26 +1,27 @@
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-
-// Load environment variables from .env file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: join(__dirname, "../.env") });
-
 import express from "express";
 import cors from "cors";
-import { verifyEmailsForPerson, verifyMultipleEmails } from "./emailVerifier.js";
+import axios from "axios";
+import { verifyMultipleEmails } from "./emailVerifier.js";
 
+/* -------------------- ENV SETUP -------------------- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: join(__dirname, "../.env") });
+
+/* -------------------- APP SETUP -------------------- */
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// Finder endpoint: Generate email patterns and verify them
+/* -------------------- FIND EMAILS (HUNTER) -------------------- */
 app.post("/api/find-emails", async (req, res) => {
   const { firstName, domain } = req.body;
-  console.log("Hit /api/find-emails with body:", req.body);
 
   if (!firstName || !domain) {
     return res.status(400).json({
@@ -29,50 +30,90 @@ app.post("/api/find-emails", async (req, res) => {
     });
   }
 
-  // Parse full name: split "nandhakumar s" into firstName="nandhakumar" and lastName="s"
-  const nameParts = firstName.trim().split(/\s+/);
-  const parsedFirstName = nameParts[0] || "";
-  const parsedLastName = nameParts.slice(1).join(" ") || "";
-
-  try {
-    const results = await verifyEmailsForPerson(parsedFirstName, parsedLastName, domain);
-
-    return res.json({
-      success: true,
-      totalFound: results.length,
-      results,
+  const hunterApiKey = process.env.HUNTER_API_KEY;
+  if (!hunterApiKey) {
+    return res.status(500).json({
+      success: false,
+      message: "HUNTER_API_KEY not configured",
     });
-  } catch (err) {
-    console.error("Error verifying emails:", err.code || err.message);
+  }
 
-    if (err.code === "SMTP_UNAVAILABLE") {
-      return res.status(503).json({
-        success: false,
-        reason: "smtp_unavailable",
-        message: "SMTP server unavailable (port 25 blocked or unreachable). Cannot verify emails.",
+  // Clean domain (remove https:// etc)
+  const cleanDomain = domain.replace(/^https?:\/\//, "").trim();
+
+  // Parse name (allow full name)
+  const parts = firstName.trim().split(/\s+/);
+  const first = parts[0];
+  const last = parts.slice(1).join(" ");
+  console.log("last : ", last);
+  try {
+    const response = await axios.get(
+      "https://api.hunter.io/v2/email-finder",
+      {
+        timeout: 8000,
+        params: {
+          domain: cleanDomain,
+          first_name: first,
+          last_name: last || "",
+          api_key: hunterApiKey,
+        },
+      }
+    );
+
+    const emailData = response.data?.data;
+    console.log("emailData : ", emailData);
+
+    if (!emailData || !emailData.email) {
+      return res.json({
+        success: true,
+        totalFound: 0,
+        results: [],
       });
     }
 
-    return res.status(500).json({
+    const score = typeof emailData.score === "number" ? emailData.score : 0;
+
+    let status = "risky";
+    if (score >= 90) status = "valid";
+    else if (score < 60) status = "invalid";
+
+    return res.json({
+      success: true,
+      totalFound: 1,
+      results: [
+        {
+          email: emailData.email,
+          status,
+          confidence: score,
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Hunter API error:", err.response?.data || err.message);
+
+    return res.status(502).json({
       success: false,
-      message: "Failed to verify emails (MX/SMTP error)",
+      message: "Failed to fetch email from Hunter",
     });
   }
 });
 
+/* -------------------- CHECK EMAILS (SMTP) -------------------- */
 app.post("/api/check-emails", async (req, res) => {
   const { emails } = req.body;
 
-  if (!emails || !Array.isArray(emails) || emails.length === 0) {
+  if (!Array.isArray(emails) || emails.length === 0) {
     return res.status(400).json({
       success: false,
-      message: "emails array is required and must not be empty",
+      message: "emails array is required",
     });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const validEmails = emails.filter(email => emailRegex.test(email.trim()));
-  
+  const validEmails = emails
+    .map(e => e.trim())
+    .filter(e => emailRegex.test(e));
+
   if (validEmails.length === 0) {
     return res.status(400).json({
       success: false,
@@ -81,7 +122,7 @@ app.post("/api/check-emails", async (req, res) => {
   }
 
   try {
-    const results = await verifyMultipleEmails(validEmails.map(e => e.trim()));
+    const results = await verifyMultipleEmails(validEmails);
 
     return res.json({
       success: true,
@@ -89,23 +130,24 @@ app.post("/api/check-emails", async (req, res) => {
       results,
     });
   } catch (err) {
-    console.error("Error checking emails:", err.code || err.message);
+    console.error("Email check error:", err.code || err.message);
 
     if (err.code === "SMTP_UNAVAILABLE") {
       return res.status(503).json({
         success: false,
         reason: "smtp_unavailable",
-        message: "SMTP server unavailable (port 25 blocked or unreachable). Cannot verify emails.",
+        message: "SMTP server unavailable (port 25 blocked)",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: "Failed to check emails (MX/SMTP error)",
+      message: "Failed to verify emails",
     });
   }
 });
 
+/* -------------------- START SERVER -------------------- */
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
