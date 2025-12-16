@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download, ChevronDown, ChevronUp} from 'lucide-react';
 import './Dashboard.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lead-tool.onrender.com';
 
 export default function EmailFinderChecker() {
   const [activeTab, setActiveTab] = useState('finder');
