@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download} from 'lucide-react';
+import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download, ChevronDown, ChevronUp} from 'lucide-react';
 import './Dashboard.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -8,7 +8,6 @@ export default function EmailFinderChecker() {
   const [activeTab, setActiveTab] = useState('finder');
   const [finderInput, setFinderInput] = useState({
     firstName: '',
-    lastName: '',
     domain: '',
   });
   const [finderResults, setFinderResults] = useState([]);
@@ -16,6 +15,7 @@ export default function EmailFinderChecker() {
   const [loading, setLoading] = useState(false);
   const [bulkEmails, setBulkEmails] = useState('');
   const [error, setError] = useState('');
+  const [expandedRows, setExpandedRows] = useState(new Set());
 
   const validateEmailFormat = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -137,8 +137,8 @@ export default function EmailFinderChecker() {
   const downloadResults = (results) => {
     if (!results.length) return;
     const csv =
-      'Email,Status,Confidence\n' +
-      results.map((r) => `${r.email},${r.status},${r.confidence}%`).join('\n');
+      'Email,Status,Confidence,Reasons\n' +
+      results.map((r) => `${r.email},${r.status},${r.confidence}%,${(r.reasons || []).join('; ')}`).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -146,6 +146,16 @@ export default function EmailFinderChecker() {
     a.download = 'email-results.csv';
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const toggleRowExpansion = (idx) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(idx)) {
+      newExpanded.delete(idx);
+    } else {
+      newExpanded.add(idx);
+    }
+    setExpandedRows(newExpanded);
   };
 
   const activeResults = activeTab === 'finder' ? finderResults : checkerResults;
@@ -227,22 +237,14 @@ export default function EmailFinderChecker() {
             <>
               <div className="finder-inline">
                 <div className="fg">
-                      <label>Full Name</label>
+                      <label>First Name</label>
                       <input
                         type="text"
-                        value={finderInput.fullName}
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          const [firstName, ...lastNameParts] = value.trim().split(/\s+/);
-
-                          setFinderInput({
-                            fullName: value,
-                            firstName: firstName || '',
-                            lastName: lastNameParts.join(' ') || '',
-                          });
-                        }}
-                        placeholder="John Doe"
+                        value={finderInput.firstName}
+                        onChange={(e) =>
+                          setFinderInput({ ...finderInput, firstName: e.target.value })
+                        }
+                        placeholder="John"
                       />
                     </div>
                     
@@ -357,34 +359,99 @@ export default function EmailFinderChecker() {
                 </div>
 
                 <div className="results-list">
-                  {activeResults.map((result, idx) => (
-                    <div className="result-row" key={idx}>
-                      <div className="result-main">
-                        <div className="result-email" title={result.email}>
-                          {result.email}
+                  {activeResults.map((result, idx) => {
+                    const isExpanded = expandedRows.has(idx);
+                    const hasDetails = result.reasons && result.reasons.length > 0 || result.checks;
+                    return (
+                      <div className="result-row" key={idx}>
+                        <div className="result-row-main">
+                          <div className="result-main">
+                            <div className="result-email" title={result.email}>
+                              {result.email}
+                            </div>
+                            <div className="result-meta">
+                              Confidence:{' '}
+                              <span className="result-meta-strong">
+                                {result.confidence}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="result-actions">
+                            <span className={getStatusClass(result.status)}>
+                              {getStatusIcon(result.status)}
+                              <span>{result.status}</span>
+                            </span>
+                            {hasDetails && (
+                              <button
+                                className="icon-btn"
+                                onClick={() => toggleRowExpansion(idx)}
+                                title="Show details"
+                              >
+                                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                              </button>
+                            )}
+                            <button
+                              className="icon-btn"
+                              onClick={() => copyToClipboard(result.email)}
+                              title="Copy email"
+                            >
+                              <Copy size={14} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="result-meta">
-                          Confidence:{' '}
-                          <span className="result-meta-strong">
-                            {result.confidence}%
-                          </span>
-                        </div>
+                        {isExpanded && hasDetails && (
+                          <div className="result-details">
+                            {result.reasons && result.reasons.length > 0 && (
+                              <div className="result-details-section">
+                                <strong>Verification Details:</strong>
+                                <ul className="result-reasons">
+                                  {result.reasons.map((reason, rIdx) => (
+                                    <li key={rIdx}>{reason}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {result.checks && (
+                              <div className="result-details-section">
+                                <strong>Checks Performed:</strong>
+                                <div className="result-checks">
+                                  <span className={`check-badge ${result.checks.syntax ? 'check-pass' : 'check-fail'}`}>
+                                    Syntax {result.checks.syntax ? '✓' : '✗'}
+                                  </span>
+                                  <span className={`check-badge ${result.checks.domain ? 'check-pass' : 'check-fail'}`}>
+                                    Domain {result.checks.domain ? '✓' : '✗'}
+                                  </span>
+                                  <span className={`check-badge ${result.checks.mxRecords ? 'check-pass' : 'check-fail'}`}>
+                                    MX Records {result.checks.mxRecords ? '✓' : '✗'}
+                                  </span>
+                                  {result.checks.smtp !== null && (
+                                    <span className={`check-badge ${result.checks.smtp === true ? 'check-pass' : result.checks.smtp === false ? 'check-fail' : 'check-warn'}`}>
+                                      SMTP {result.checks.smtp === true ? '✓' : result.checks.smtp === false ? '✗' : '?'}
+                                    </span>
+                                  )}
+                                  {result.checks.disposable && (
+                                    <span className="check-badge check-warn">
+                                      Disposable ⚠
+                                    </span>
+                                  )}
+                                  {result.checks.role && (
+                                    <span className="check-badge check-info">
+                                      Role-based ℹ
+                                    </span>
+                                  )}
+                                  {result.checks.catchAll === true && (
+                                    <span className="check-badge check-warn">
+                                      Catch-all ⚠
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <div className="result-actions">
-                        <span className={getStatusClass(result.status)}>
-                          {getStatusIcon(result.status)}
-                          <span>{result.status}</span>
-                        </span>
-                        <button
-                          className="icon-btn"
-                          onClick={() => copyToClipboard(result.email)}
-                          title="Copy email"
-                        >
-                          <Copy size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {!activeResults.length && (
                     <div className="results-empty">

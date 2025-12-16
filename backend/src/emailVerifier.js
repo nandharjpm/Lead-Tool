@@ -1,34 +1,5 @@
 import dns from "dns";
 import net from "net";
-
-export function generateCandidates(firstName, domain) {
-  const f = (firstName || "").toLowerCase().trim();
-  const d = (domain || "").toLowerCase().trim();
-
-  if (!f || !d) {
-    return [];
-  }
-
-  const firshtChar = f.charAt(0);
-  const lastChar = f.charAt(f.length - 1);
-
-
-  const patterns = new Set();
-  patterns.add(`${f}@${d}`);           
-  patterns.add(`${firshtChar}@${d}`);    
-  patterns.add(`${firshtChar}.${f}@${d}`);
-  patterns.add(`${f}.${firshtChar}@${d}`);
-  patterns.add(`${firshtChar}-${f}@${d}`);
-  patterns.add(`${firshtChar}${f}@${d}`);
-  patterns.add(`${lastChar}@${d}`);    
-  patterns.add(`${lastChar}.${f}@${d}`);
-  patterns.add(`${lastChar}-${f}@${d}`);
-  patterns.add(`${f}.${lastChar}@${d}`);
-  patterns.add(`${lastChar}${f}@${d}`);
-
-  return Array.from(patterns);
-}
-
 // ---- MX lookup ----
 export function resolveMx(domain) {
   return new Promise((resolve, reject) => {
@@ -96,12 +67,46 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
 
     socket.on("data", (chunk) => {
       buffer += chunk.toString();
-      if (!buffer.includes("\n")) return;
+      
+      // Wait for complete response (SMTP responses end with \r\n)
+      if (!buffer.includes("\r\n")) return;
 
-      const lines = buffer.trim().split("\n");
-      const lastLine = lines[lines.length - 1].trim();
-      const code = parseInt(lastLine.slice(0, 3), 10) || 0;
+      const lines = buffer.split("\r\n").filter(line => line.trim());
+      if (lines.length === 0) return;
+      
+      // Get the last complete line (SMTP multi-line responses end with space after code)
+      let responseLine = "";
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i].trim();
+        if (line.length >= 3) {
+          const lineCode = parseInt(line.slice(0, 3), 10);
+          if (!isNaN(lineCode)) {
+            // Check if this is the final line (no space after code = final line)
+            if (line.length === 3 || line[3] !== ' ') {
+              responseLine = line;
+              break;
+            } else {
+              // This is a continuation line, keep looking
+              responseLine = line;
+            }
+          }
+        }
+      }
+      
+      if (!responseLine) {
+        buffer = "";
+        return;
+      }
+      
+      const code = parseInt(responseLine.slice(0, 3), 10) || 0;
+      const message = responseLine.substring(4).trim();
 
+      // Log SMTP responses for debugging
+      if (step >= 2) {
+        console.log(`SMTP [${email}]: ${code} ${message}`);
+      }
+
+      // Clear buffer after processing
       buffer = "";
 
       if (step === 0) {
@@ -114,12 +119,35 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
         socket.write(`RCPT TO:<${email}>\r\n`);
         step = 3;
       } else if (step === 3) {
+        // SMTP response codes:
+        // 2xx = Success (email exists)
+        // 250 = Requested mail action okay, completed
+        // 251 = User not local; will forward
+        // 450 = Mailbox temporarily unavailable (greylisting - treat as valid)
+        // 451 = Requested action aborted: local error (treat as uncertain)
+        // 550 = Mailbox unavailable / User not found (email doesn't exist)
+        // 551 = User not local (email doesn't exist)
+        // 553 = Mailbox name not allowed (email doesn't exist)
         
         if (code >= 200 && code < 300) {
+          // 2xx codes = valid email
+          console.log(`✓ Email ${email} is VALID (code: ${code})`);
           finish(true);
+        } else if (code === 450) {
+          // Greylisting - temporarily unavailable but email likely exists
+          console.log(`⚠ Email ${email} is likely VALID but greylisted (code: ${code})`);
+          finish(true); // Treat greylisting as valid
         } else if (code === 550 || code === 551 || code === 553) {
+          // Explicit rejection = email doesn't exist
+          console.log(`✗ Email ${email} is INVALID (code: ${code})`);
           finish(false);
+        } else if (code >= 400 && code < 500) {
+          // Other 4xx codes = uncertain (could be temporary or policy)
+          console.log(`? Email ${email} status UNCERTAIN (code: ${code} - ${message})`);
+          finish(null);
         } else {
+          // Unknown codes = uncertain
+          console.log(`? Email ${email} status UNCERTAIN (unknown code: ${code} - ${message})`);
           finish(null);
         }
       }
@@ -129,31 +157,6 @@ export function smtpVerifyEmail(email, mxHost, timeoutMs = 8000) {
       if (!finished) finish(null);
     });
   });
-}
-
-export async function verifySingleEmail(email) {
-  const domain = email.split("@")[1];
-  if (!domain) {
-    return { email, status: "invalid", confidence: 0, message: "Invalid email format" };
-  }
-
-  try {
-    const mxHost = await resolveMx(domain);
-    const result = await smtpVerifyEmail(email, mxHost);
-    
-    if (result === true) {
-      return { email, status: "valid", confidence: 95 };
-    } else if (result === false) {
-      return { email, status: "invalid", confidence: 0 };
-    } else {
-      return { email, status: "risky", confidence: 50 };
-    }
-  } catch (err) {
-    if (err.code === "SMTP_UNAVAILABLE") {
-      throw err;
-    }
-    return { email, status: "risky", confidence: 30, message: "Could not verify" };
-  }
 }
 
 export async function verifyMultipleEmails(emails) {
@@ -194,15 +197,28 @@ export async function verifyMultipleEmails(emails) {
   return results;
 }
 
-export async function verifyEmailsForPerson(firstName, domain) {
-  const candidates = generateCandidates(firstName, domain.trim());
+export async function verifyEmailsForPerson(firstName, lastName, domain) {
+  const domainTrimmed = domain.trim();
+  
+  // Step 1: Analyze domain with Gemini AI to predict email patterns
+  console.log(`Analyzing domain patterns for: ${domainTrimmed}`);
+  const aiPatterns = await analyzeDomainPattern(domainTrimmed);
+  
+  // Step 2: Generate candidates using AI-predicted patterns
+  const candidates = aiPatterns 
+    ? await generateCandidatesWithAI(firstName, lastName, domainTrimmed, aiPatterns)
+    : generateCandidates(firstName, lastName, domainTrimmed);
+
+  const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+  console.log(`Generated ${candidates.length} candidate emails for ${fullName}@${domainTrimmed}`);
 
   if (!candidates.length) {
     return candidates.map(email => ({ email, status: "invalid", confidence: 0 }));
   }
 
+  // Step 3: Verify candidates using SMTP
   try {
-    const mxHost = await resolveMx(domain.trim());
+    const mxHost = await resolveMx(domainTrimmed);
     const results = [];
 
     for (const email of candidates) {
