@@ -4,7 +4,7 @@ import { dirname, join } from "path";
 import express from "express";
 import cors from "cors";
 import axios from "axios";
-import { verifyMultipleEmails } from "./emailVerifier.js";
+import { verifyMultipleEmails } from "./enhancedEmailVerifier.js";
 
 /* -------------------- ENV SETUP -------------------- */
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +50,7 @@ app.post("/api/find-emails", async (req, res) => {
     const response = await axios.get(
       "https://api.hunter.io/v2/email-finder",
       {
-        timeout: 8000,
+        timeout: 10000,
         params: {
           domain: cleanDomain,
           first_name: first,
