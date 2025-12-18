@@ -3,7 +3,7 @@ import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from '../../public/logo.svg';
+import logo from "../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -25,18 +25,26 @@ export default function Navbar() {
     }
   };
 
-    const handleEmailLogin = async () => {
+     const handleEmailLogin = async () => {
     try {
-      const result = await loginWithEmail("test@example.com", "password123");  
-      console.log("Logged In:", result.user);
+      const result = await loginWithEmail(email, password);
 
-      showSuccess("Login successful!");
+      console.log("Logged in:", result.user);
+
+      // Optional: save profile info
+      await saveUserProfile({
+        name,
+        phone: `${countryCode}${phone}`,
+        email,
+      });
+
       navigate("/");
     } catch (err) {
       console.error(err);
       alert("Login failed");
     }
   };
+
 
   const showSuccess = (msg) => {
     setShowPopup(msg);
@@ -58,7 +66,7 @@ export default function Navbar() {
       </div>
 
       <div className="nav-right">
-        <button className="btn-outline" onClick={handleEmailLogin}> SIGN IN </button>
+        <Link to="/login" className="btn-outline">SIGN IN</Link>
         <button className="btn-solid" onClick={handleGoogleSignup}>
           SIGN UP
         </button>

@@ -1,0 +1,132 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+/* Google */
+.google-btn {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.google-btn img {
+  width: 18px;
+}
+
+/* Divider */
+.divider {
+  margin: 24px 0;
+  text-align: center;
+  position: relative;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  background: #ffffff;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #64748b;
+  position: relative;
+}
+
+/* Labels & Inputs */
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  height: 46px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+/* Phone */
+.phone-container {
+  margin-bottom: 16px;
+}
+
+.phone-input {
+  width: 100% !important;
+  height: 46px !important;
+  border-radius: 10px !important;
+  border: 1px solid #d1d5db !important;
+  font-size: 14px !important;
+}
+
+/* Password */
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* CTA */
+.btn-primary {
+  width: 100%;
+  height: 48px;
+  background: #560591;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Footer */
+.auth-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: #560591;
+  font-weight: 500;
+  text-decoration: none;
+}
