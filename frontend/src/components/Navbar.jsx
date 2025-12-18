@@ -34,7 +34,7 @@ export default function Navbar() {
     } catch (err) {
       console.error(err);
       alert("Login failed");
-    } git config --global core.autocrlf true
+    }
   };
 
   const showSuccess = (msg) => {
