@@ -3,6 +3,7 @@ import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import logo from '../../public/logo.svg';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function Navbar() {
     <>
     <nav className="navbar">
       <div className="nav-left">
-        <div className="logo"> Logo </div>
+        <Link to="/" className="logo"><img src={logo} alt="Your Brand Logo" /></Link>
         <Link to="/features" className="nav-item">
           Features
         </Link>

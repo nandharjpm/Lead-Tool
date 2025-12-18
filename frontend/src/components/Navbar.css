@@ -2,6 +2,12 @@
 /* BASE NAVBAR DESKTOP STYLE */
 /* ========================= */
 
+.logo img {
+  height: 32px;       /* adjust as needed */
+  width: auto;
+  display: block;
+}
+
 .popup {
   position: fixed;
   top: 20px;
