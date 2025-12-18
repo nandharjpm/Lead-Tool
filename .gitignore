@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# firebase
+# Dependency directories
 backend/node_modules
 node_modules
 dist
