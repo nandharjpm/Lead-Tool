@@ -1,0 +1,47 @@
+.features-section {
+  padding: 64px 20px;
+  background: #ffffff;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.features-title {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.features-subtitle {
+  text-align: center;
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 48px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.feature-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.feature-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475569;
+}

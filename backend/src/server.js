@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { verifyEmailsForPerson, verifyMultipleEmails, verifySingleEmail } from "./emailVerifier.js";
-import Session from "./fingerprint/visitor.model.js";
+// import Session from "./fingerprint/visitor.model.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -2,6 +2,7 @@ import "../components/Navbar.css";
 import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function Navbar() {
     } catch (err) {
       console.error(err);
       alert("Login failed");
-    }
+    } git config --global core.autocrlf true
   };
 
   const showSuccess = (msg) => {
@@ -45,9 +46,14 @@ export default function Navbar() {
     <>
     <nav className="navbar">
       <div className="nav-left">
-        <div className="nav-item dropdown">Features ▾</div>
-        <div className="nav-item dropdown">Resources ▾</div>
-        <div className="nav-item">Pricing</div>
+        <div className="logo"> Logo </div>
+        <Link to="/features" className="nav-item">
+          Features
+        </Link>
+        <Link to="/pricing" className="nav-item">
+          Pricing
+        </Link>
+
       </div>
 
       <div className="nav-right">
