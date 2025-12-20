@@ -2,6 +2,7 @@ import "../components/Navbar.css";
 import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { linkFingerprintToUser } from '../utils/fingerprint';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -11,6 +12,20 @@ export default function Navbar() {
     try {
       const result = await signInWithGoogle();
       console.log("User:", result.user);
+
+      // Link fingerprint to user account (if available)
+      try {
+        const fingerprintId = localStorage.getItem('fingerprintId');
+        if (fingerprintId && result?.user?.uid) {
+          const linkRes = await linkFingerprintToUser(fingerprintId, result.user.uid);
+          if (linkRes?.credits !== undefined) {
+            localStorage.setItem('fingerprintCredits', String(linkRes.credits));
+            showSuccess('Signup successful! Free credits applied.');
+          }
+        }
+      } catch (linkErr) {
+        console.warn('Failed to link fingerprint after Google signup', linkErr);
+      }
 
       setShowPopup(true);
       setTimeout(() => {
@@ -25,8 +40,27 @@ export default function Navbar() {
 
     const handleEmailLogin = async () => {
     try {
-      const result = await loginWithEmail("test@example.com", "password123");  
-      console.log("Logged In:", result.user);
+        let result = {};
+      if (typeof loginWithEmail === 'function') {
+        result = await loginWithEmail("test@example.com", "password123");
+        console.log("Logged In:", result.user);
+      } else {
+        console.warn('loginWithEmail not implemented in this codebase');
+      }
+
+      // Attempt to link fingerprint if login returns a user
+      try {
+        const fingerprintId = localStorage.getItem('fingerprintId');
+        if (fingerprintId && result?.user?.uid) {
+          const linkRes = await linkFingerprintToUser(fingerprintId, result.user.uid);
+          if (linkRes?.credits !== undefined) {
+            localStorage.setItem('fingerprintCredits', String(linkRes.credits));
+            showSuccess('Login successful! Free credits applied.');
+          }
+        }
+      } catch (linkErr) {
+        console.warn('Failed to link fingerprint after login', linkErr);
+      }
 
       showSuccess("Login successful!");
       navigate("/");

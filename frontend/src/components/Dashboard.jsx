@@ -35,6 +35,7 @@ export default function EmailFinderChecker() {
     setFinderResults([]);
 
     try {
+      const fingerprintId = localStorage.getItem('fingerprintId');
       const response = await fetch(`${API_BASE_URL}/api/find-emails`, {
         method: 'POST',
         headers: {
@@ -43,6 +44,7 @@ export default function EmailFinderChecker() {
         body: JSON.stringify({
           firstName: firstName.trim(),
           domain: domain.trim(),
+          fingerprintId
         }),
       });
 

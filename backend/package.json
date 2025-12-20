@@ -5,11 +5,16 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test:credits": "node src/scripts/test-credit-flow.js",
+    "test:users": "node src/scripts/test-usersdetails.js",
+    "test:persist:email": "node src/scripts/test-persist-email.js",
+    "test:api:persist": "node src/scripts/test-api-persist.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.2",
+    "mongoose": "^7.4.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.21.0",
