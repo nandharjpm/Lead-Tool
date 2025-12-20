@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download} from 'lucide-react';
 import './Dashboard.css';
+import { Link, useLocation } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function EmailFinderChecker() {
-  const [activeTab, setActiveTab] = useState('finder');
   const [finderInput, setFinderInput] = useState({
     firstName: '',
     lastName: '',
@@ -16,6 +16,19 @@ export default function EmailFinderChecker() {
   const [loading, setLoading] = useState(false);
   const [bulkEmails, setBulkEmails] = useState('');
   const [error, setError] = useState('');
+  const location = useLocation();
+
+    const getTabFromPath = () => {
+      if (location.pathname === '/email-verification') return 'checker';
+      return 'finder';
+    };
+
+    const [activeTab, setActiveTab] = useState(getTabFromPath());
+
+    useEffect(() => {
+      setActiveTab(getTabFromPath());
+    }, [location.pathname]);
+
 
   const [sessionId, setSessionId] = useState(
   () => localStorage.getItem('sessionId') || null
@@ -226,10 +239,8 @@ useEffect(() => {
       <div className="header-section">
 
         <h1 className="header-large-heading">
-         Accurate email discovery for your 
-         <span className='span-color'> Healthcare </span>
-         outreach.
-        </h1>
+  Accurate Email Finder & Verifier for <span className='span-color'>Healthcare Outreach</span>
+</h1>
       </div>
 
 
@@ -240,28 +251,32 @@ useEffect(() => {
               <Mail size={18} />
             </div>
             <div>
-              <h1 className="email-header__title">Email Finder &amp; Checker</h1>
+              <h1 className="email-header__title">Email Finder &amp; Verifier Tool</h1>
               <p className="email-header__subtitle">
-                Find patterns &amp; validate email addresses in seconds.
-              </p>
+                Instantly find and verify business email addresses for sales, marketing, and outreach.</p>
+
             </div>
           </header>
 
 
           <div className="email-tabs">
-            <button
-              className={'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '')}
-              onClick={() => { setActiveTab('finder'); setError('') }} >
-              <Search size={16} />
-              Finder
-            </button>
-            <button
-              className={'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')}
-              onClick={() => { setActiveTab('checker'); setError('') }}>
-              <CheckCircle size={16} />
-              Checker
-            </button>
-          </div>
+  <Link
+    to="/email-finder"
+    className={'email-tab' + (activeTab === 'finder' ? ' email-tab--active' : '')}
+  >
+    <Search size={16} />
+    Finder
+  </Link>
+
+  <Link
+    to="/email-verification"
+    className={'email-tab' + (activeTab === 'checker' ? ' email-tab--active' : '')}
+  >
+    <CheckCircle size={16} />
+    Checker
+  </Link>
+</div>
+
 
           {error && (
             <div className="email-error">
