@@ -369,12 +369,14 @@ export default function EmailFinderChecker() {
                             <div className="result-email" title={result.email}>
                               {result.email}
                             </div>
-                            <div className="result-meta">
-                              Confidence:{' '}
-                              <span className="result-meta-strong">
-                                {result.confidence}%
-                              </span>
-                            </div>
+                            {activeTab === 'finder' && (
+                              <div className="result-meta">
+                                Confidence:{' '}
+                                <span className="result-meta-strong">
+                                  {result.confidence}%
+                                </span>
+                              </div>
+                            )}
                           </div>
                           <div className="result-actions">
                             <span className={getStatusClass(result.status)}>
