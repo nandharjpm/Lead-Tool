@@ -91,14 +91,7 @@
   text-transform: uppercase;
 }
 
-/* Big bold headline */
-.header-large-heading {
-  margin: 0 0 12px 0;
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #0f172a; /* deep navy */
-}
+
 
 /* Gray description text */
 .header-small-subheading {

@@ -1,0 +1,55 @@
+.features-section {
+  padding: 14px 20px;
+  background: #ffffff;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Main H1 title for SEO */
+.features-main-title {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 16px 0;
+  color: #0f172a;
+}
+
+/* Intro paragraph / subtitle */
+.features-intro {
+  text-align: center;
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 48px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+.feature-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475569;
+}

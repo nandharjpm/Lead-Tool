@@ -38,7 +38,7 @@ export default function Navbar() {
     }
   };
 
-    const handleEmailLogin = async () => {
+     const handleEmailLogin = async () => {
     try {
         let result = {};
       if (typeof loginWithEmail === 'function') {
@@ -62,13 +62,13 @@ export default function Navbar() {
         console.warn('Failed to link fingerprint after login', linkErr);
       }
 
-      showSuccess("Login successful!");
       navigate("/");
     } catch (err) {
       console.error(err);
       alert("Login failed");
     }
   };
+
 
   const showSuccess = (msg) => {
     setShowPopup(msg);
@@ -79,13 +79,18 @@ export default function Navbar() {
     <>
     <nav className="navbar">
       <div className="nav-left">
-        <div className="nav-item dropdown">Features ▾</div>
-        <div className="nav-item dropdown">Resources ▾</div>
-        <div className="nav-item">Pricing</div>
+        <Link to="/" className="logo"><img src={logo} alt="Your Brand Logo" /></Link>
+        <Link to="/features" className="nav-item">
+          Features
+        </Link>
+        <Link to="/pricing" className="nav-item">
+          Pricing
+        </Link>
+
       </div>
 
       <div className="nav-right">
-        <button className="btn-outline" onClick={handleEmailLogin}> SIGN IN </button>
+        <Link to="/login" className="btn-outline">SIGN IN</Link>
         <button className="btn-solid" onClick={handleGoogleSignup}>
           SIGN UP
         </button>
