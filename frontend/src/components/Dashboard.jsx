@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from "react";
 import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download, ChevronDown, ChevronUp} from 'lucide-react';
 import './Dashboard.css';
 import { Link, useLocation } from 'react-router-dom';
