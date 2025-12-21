@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { makeFingerprint, ensureFingerprintOnServer } from './utils/fingerprint';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";

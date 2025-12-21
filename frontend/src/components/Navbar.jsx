@@ -1,8 +1,10 @@
 import "../components/Navbar.css";
 import { signInWithGoogle } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { linkFingerprintToUser } from '../utils/fingerprint';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
