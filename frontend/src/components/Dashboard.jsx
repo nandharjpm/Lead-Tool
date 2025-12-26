@@ -7,9 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function EmailFinderChecker() {
   const [finderInput, setFinderInput] = useState({
-    firstName: '',
-    lastName: '',
-    domain: '',
+    fullName: '', firstName: '', lastName: '', domain: '',
   });
   const [finderResults, setFinderResults] = useState([]);
   const [checkerResults, setCheckerResults] = useState([]);
@@ -35,7 +33,7 @@ export default function EmailFinderChecker() {
   );
 
   const startSession = async () => {
-  const res = await fetch('/api/session/start', {
+  const res = await fetch(`${API_BASE_URL}/api/session/start`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -45,12 +43,27 @@ export default function EmailFinderChecker() {
       screenResolution: `${window.screen.width}x${window.screen.height}`,
     }),
   });
+  if (!res.ok) {
+    // Try to provide a helpful error but don't crash the caller
+    console.error('Failed to start session:', res.status, res.statusText);
+    return null;
+  }
 
-  const data = await res.json();
-  localStorage.setItem('sessionId', data.sessionId);
-  setSessionId(data.sessionId);
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (err) {
+    console.error('Failed to parse session start response:', err);
+    return null;
+  }
 
-  return data.sessionId;
+  if (data && data.sessionId) {
+    localStorage.setItem('sessionId', data.sessionId);
+    setSessionId(data.sessionId);
+    return data.sessionId;
+  }
+
+  return null;
 };
 
 useEffect(() => {
@@ -76,11 +89,11 @@ useEffect(() => {
   };
 
   const handleFindEmails = async () => {
-    const { firstName, domain } = finderInput;
+    const { firstName, lastName, fullName, domain } = finderInput;
     setError('');
 
-    if (!firstName || !domain) {
-      setError('Please fill in all fields before searching.');
+    if (!fullName || !domain) {
+      setError('Please enter a full name and domain before searching.');
       return;
     }
 
@@ -100,7 +113,10 @@ useEffect(() => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: firstName.trim(),
+          // send fullName and parsed parts; backend will parse first/last name from fullName
+          fullName: fullName ? fullName.trim() : `${firstName.trim()} ${lastName ? lastName.trim() : ''}`.trim(),
+          firstName: firstName ? firstName.trim() : '',
+          lastName: lastName ? lastName.trim() : '',
           domain: domain.trim(),
           sessionId: activeSessionId,
         }),
@@ -296,13 +312,14 @@ useEffect(() => {
                         onChange={(e) => {
                           const value = e.target.value;
 
-                          const [firstName, ...lastNameParts] = value.trim().split(/\s+/);
+                            const [firstName, ...lastNameParts] = value.trim().split(/\s+/);
 
-                          setFinderInput({
-                            fullName: value,
-                            firstName: firstName || '',
-                            lastName: lastNameParts.join(' ') || '',
-                          });
+                            setFinderInput((prev) => ({
+                              ...prev,
+                              fullName: value,
+                              firstName: firstName || '',
+                              lastName: lastNameParts.join(' ') || '',
+                            }));
                         }}
                         placeholder="John Doe"
                       />
