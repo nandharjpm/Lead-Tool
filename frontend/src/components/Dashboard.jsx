@@ -3,7 +3,7 @@ import {Mail, Search, CheckCircle, XCircle,AlertCircle, Loader2, Copy,Download} 
 import './Dashboard.css';
 import { Link, useLocation } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lead-tool.onrender.com';
 
 export default function EmailFinderChecker() {
   const [finderInput, setFinderInput] = useState({
