@@ -175,12 +175,22 @@ app.post("/api/check-emails", async (req, res) => {
     });
   } catch (err) {
     console.error("Error checking emails:", err.code || err.message);
-
+    // If SMTP unavailable, return a best-effort 'risky' suggestion for each input email
     if (err.code === "SMTP_UNAVAILABLE") {
-      return res.status(503).json({
-        success: false,
-        reason: "smtp_unavailable",
-        message: "SMTP server unavailable (port 25 blocked or unreachable). Cannot verify emails.",
+      console.warn('SMTP unavailable, returning risky suggestions instead of error');
+      const fallbackResults = validEmails.map(email => ({
+        email: email.trim(),
+        status: 'risky',
+        confidence: 30,
+        message: 'SMTP unavailable — suggestion only',
+      }));
+
+      return res.json({
+        success: true,
+        totalChecked: fallbackResults.length,
+        results: fallbackResults,
+        fallback: true,
+        message: 'SMTP unavailable — returned suggestion results with low confidence'
       });
     }
 
